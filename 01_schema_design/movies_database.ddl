@@ -8,6 +8,8 @@ CREATE TABLE IF NOT EXISTS content.film_work (
     creation_date DATE,
     rating FLOAT,
     type TEXT not null,
+    certificate TEXT,
+    file_path TEXT,
     created timestamp with time zone,
     modified timestamp with time zone
 );
