@@ -2,12 +2,7 @@ from itertools import islice
 from typing import Dict
 
 import psycopg2
-
-from data_classes import FilmWork
-from data_classes import Genre
-from data_classes import GenreFilmwork
-from data_classes import Person
-from data_classes import PersonFilmWork
+from data_classes import FilmWork, Genre, GenreFilmwork, Person, PersonFilmWork
 
 
 class PostgresSaver:
@@ -127,3 +122,4 @@ class PostgresSaver:
 
     def run(self, data: Dict[str, list]):
         self._router(data)
+        self.cursor.close()

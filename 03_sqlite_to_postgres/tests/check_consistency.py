@@ -1,12 +1,23 @@
+import os
 import sqlite3
 from collections import defaultdict
 
 import psycopg2
 from dateutil import parser
 from psycopg2.extras import DictCursor
+from dotenv import load_dotenv
+
+load_dotenv()
 
 DB_PATH = '../db.sqlite'
-DSL = {'dbname': 'movies_database', 'user': 'app', 'password': '123qwe', 'host': '127.0.0.1', 'port': 5432}
+DSL = {
+    'dbname': os.environ.get('DB_NAME'),
+    'user': os.environ.get('DB_USER'),
+    'password': os.environ.get('DB_PASSWORD'),
+    'host': os.environ.get('HOST'),
+    'port': os.environ.get('PORT')
+}
+
 SQL = """SELECT * FROM {table};"""
 
 postgres_data = defaultdict(list)

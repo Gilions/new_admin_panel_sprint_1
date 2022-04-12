@@ -1,6 +1,7 @@
 import uuid
+
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
-from django.core.validators import MinValueValidator, MaxValueValidator
 from django.utils.translation import gettext_lazy as _
 
 
@@ -11,6 +12,18 @@ class FilmType:
     CHOICES = [
         (MOVIE, 'Фильм'),
         (TV_SHOW, 'Сериал'),
+    ]
+
+
+class Role:
+    ACTOR = 'actor'
+    DIRECTOR = 'director'
+    WRITER = 'writer'
+
+    CHOICES = [
+        (ACTOR, 'Актер'),
+        (DIRECTOR, 'Режиссер'),
+        (WRITER, 'Сценарист'),
     ]
 
 
@@ -45,11 +58,14 @@ class Genre(UUIDMixin, TimeStampedMixin):
 class PersonFilmWork(UUIDMixin):
     film_work = models.ForeignKey('Filmwork', on_delete=models.CASCADE)
     person = models.ForeignKey('Person', on_delete=models.CASCADE)
-    role = models.TextField(_('role'), null=True)
+    role = models.TextField(_('role'), choices=Role.CHOICES, default=Role.ACTOR)
     created = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         db_table = "content\".\"person_film_work"
+        indexes = [
+            models.Index(fields=['film_work', 'person', 'role'], name='film_work_person_idx_role')
+        ]
 
 
 class Person(UUIDMixin, TimeStampedMixin):
@@ -59,6 +75,9 @@ class Person(UUIDMixin, TimeStampedMixin):
         db_table = "content\".\"person"
         verbose_name = _('Person')
         verbose_name_plural = _('Person')
+        indexes = [
+            models.Index(fields=['created'], name='person_creation_date_idx')
+        ]
 
     def __str__(self):
         return self.full_name
@@ -82,6 +101,9 @@ class Filmwork(UUIDMixin, TimeStampedMixin):
         db_table = "content\".\"film_work"
         verbose_name = _('Filmwork')
         verbose_name_plural = _('Filmwork')
+        indexes = [
+            models.Index(fields=['creation_date'], name='film_work_creation_date_idx')
+        ]
 
     def __str__(self):
         return self.title
@@ -94,3 +116,6 @@ class GenreFilmwork(UUIDMixin):
 
     class Meta:
         db_table = "content\".\"genre_film_work"
+        indexes = [
+            models.Index(fields=['film_work_id', 'genre_id'], name='film_work_genre_idx')
+        ]

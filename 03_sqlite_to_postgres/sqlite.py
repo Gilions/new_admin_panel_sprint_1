@@ -21,7 +21,7 @@ class SQLiteLoader:
         self.curs = self.connection.cursor()
         self.all_data = defaultdict(list)
 
-    def _film_work(self, data: dict):
+    def _film_work(self, data: list):
         for row in data:
             self.all_data['film_work'].append(
                 FilmWork(
@@ -37,7 +37,7 @@ class SQLiteLoader:
                 )
             )
 
-    def _person(self, data: dict):
+    def _person(self, data: list):
         for row in data:
             self.all_data['person'].append(
                 Person(
@@ -48,7 +48,7 @@ class SQLiteLoader:
                 )
             )
 
-    def _genre(self, data: dict):
+    def _genre(self, data: list):
         for row in data:
             self.all_data['genre'].append(
                 Genre(
@@ -60,7 +60,7 @@ class SQLiteLoader:
                 )
             )
 
-    def _person_film_work(self, data: dict):
+    def _person_film_work(self, data: list):
         for row in data:
             self.all_data['person_film_work'].append(
                 PersonFilmWork(
@@ -72,7 +72,7 @@ class SQLiteLoader:
                 )
             )
 
-    def _genre_film_work(self, data: dict):
+    def _genre_film_work(self, data: list):
         for row in data:
             self.all_data['genre_film_work'].append(
                 GenreFilmwork(
@@ -83,10 +83,15 @@ class SQLiteLoader:
                 )
             )
 
-    def _make_request(self, tables: [str]):
+    def _make_request(self, tables: [str], size=500):
         for table in tables:
             self.curs.execute(self.SQL.format(table=table))
-            data = self.curs.fetchall()
+            data = []
+            rows = self.curs.fetchmany(size)
+            while rows:
+                for row in rows:
+                    data.append(row)
+                rows = self.curs.fetchmany(size)
 
             if table == 'film_work':
                 self._film_work(data)
